@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wedding Invitation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<main class="page">
+
+  <!-- ======================
+       SECTION 1 — ENVELOPE
+  ======================= -->
+  <section class="section section-hero" id="hero">
+    <div class="stage">
+      <div class="envelope-wrap" id="wrap">
+
+        <img class="envelope-img" src="assets/envelope.png" alt="Envelope" draggable="false" />
+
+        <video
+          class="envelope-video"
+          id="envVideo"
+          src="assets/opening_envelope.mp4"
+          playsinline
+          muted
+          preload="auto"
+          poster="assets/envelope.png"
+        ></video>
+
+        <img class="married-img" id="marriedImg" src="assets/Married.png" alt="Married" />
+
+        <!-- (birds disabled, kept for later) -->
+        <!--
+        <div class="birds-scene" aria-hidden="true">
+          <img class="bird-png bird-left"  src="assets/bird-1.png" alt="">
+          <img class="bird-png bird-right" src="assets/bird-2.png" alt="">
+          <div class="css-heart" aria-hidden="true"></div>
+        </div>
+        -->
+
+        <!-- Heart -->
+        <div class="heart-assemble" aria-hidden="true">
+          <svg class="heart-svg" viewBox="0 0 100 90" aria-hidden="true">
+            <path class="heart-outline"
+              d="M50 82
+                 C20 60, 5 40, 20 22
+                 C30 10, 45 14, 50 26
+                 C55 14, 70 10, 80 22
+                 C95 40, 80 60, 50 82 Z"/>
+            <path class="heart-fill"
+              d="M50 82
+                 C20 60, 5 40, 20 22
+                 C30 10, 45 14, 50 26
+                 C55 14, 70 10, 80 22
+                 C95 40, 80 60, 50 82 Z"/>
+          </svg>
+        </div>
+
+        <button class="seal-hit" id="sealBtn" aria-label="Open the envelope"></button>
+        <div class="hint" id="hint">Click the seal</div>
+      </div>
+
+      <div class="scroll-indicator" aria-hidden="true">
+        <div class="mouse"></div>
+        <div class="scroll-text">Scroll down</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================
+       SECTION 2 — COUNTDOWN
+  ======================= -->
+  <section class="section section-countdown" id="countdownSection">
+    <div class="stage">
+      <div class="countdown-wrap">
+        <h1 class="countdown-title">Wedding Countdown</h1>
+        <p class="countdown-date">26 · 07 · 2026</p>
+
+        <div class="countdown-grid">
+          <div class="cd-card">
+            <div class="odo" id="odo-days"></div>
+            <label>Days</label>
+          </div>
+          <div class="cd-card">
+            <div class="odo" id="odo-hours"></div>
+            <label>Hours</label>
+          </div>
+          <div class="cd-card">
+            <div class="odo" id="odo-minutes"></div>
+            <label>Minutes</label>
+          </div>
+          <div class="cd-card">
+            <div class="odo" id="odo-seconds"></div>
+            <label>Seconds</label>
+          </div>
+        </div>
+
+        <div class="back-top">
+          <a href="#hero" class="back-link">Back to invitation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
