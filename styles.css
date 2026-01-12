@@ -6,6 +6,7 @@
   --seal-size:200px;
   --seal-left:50%;
   --seal-top:50%;
+  --title-font: "Great Vibes", cursive;
 
   /* Heart */
   --heart-x:50%;
@@ -20,6 +21,27 @@
   --odo-gap: 10px;
   --card-pad: 18px;
 }
+
+/* ===============================
+   Scroll lock system (CORRECT)
+=============================== */
+
+/* Locked by default */
+html.scroll-locked,
+body.scroll-locked{
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Unlocked state */
+html.scroll-unlocked,
+body.scroll-unlocked{
+  height: auto;
+  overflow-y: auto;
+  touch-action: auto;
+}
+
 
 *{ box-sizing:border-box; }
 
@@ -208,7 +230,17 @@ body{
   align-items:center;
   gap:8px;
   opacity:.7;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease;
+  }
+
+/* Show it only after we explicitly enable it */
+.scroll-indicator.is-visible{
+  opacity: 1;
+  pointer-events: auto;
 }
+
 
 .mouse{
   width:24px;
@@ -254,9 +286,10 @@ body{
 
 .countdown-title{
   margin:0;
-  font-size:28px;
-  font-weight:650;
-  letter-spacing:.02em;
+  font-size: clamp(40px, 7vw, 60px);
+  font-family: var(--title-font);
+  font-weight: 400;
+  letter-spacing: .3px;
 }
 
 .countdown-date{
@@ -375,3 +408,138 @@ body{
   .heart-outline{ stroke-dashoffset:0; }
   .heart-fill{ opacity:1; }
 }
+
+.section-details{
+  background: linear-gradient(#f6f4ef, #f2efe9);
+  padding: 90px 0 110px;
+}
+
+.details-title{
+  text-align:center;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(40px, 7vw, 60px);
+  font-weight: 400;
+  margin-bottom: 6px;
+  color: #2e2a26;
+}
+
+.details-subtitle{
+  text-align:center;
+  font-size: 15px;
+  color: #7a736c;
+  margin-bottom: 40px;
+}
+
+.details-card{
+  max-width: 420px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 26px 22px 22px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.08);
+  text-align:center;
+}
+
+.details-icon{
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.details-badge{
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  margin: 0 auto 10px;
+
+  display: grid;
+  place-items: center;
+
+  background: radial-gradient(
+    circle at 30% 25%,
+    #f6e7b2 0%,
+    #e6c87a 45%,
+    #c9a24d 100%
+  );
+
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.12),
+    inset 0 1px 0 rgba(255,255,255,.55);
+}
+
+.badge-pin{
+  width: 22px;
+  height: 22px;
+  fill: rgba(90, 65, 20, 0.85);
+}
+
+
+.lux-pin{
+  width: 26px;
+  height: 26px;
+  fill: linear-gradient(#d6b46a, #a8843a);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.25));
+}
+
+
+.details-heading{
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2e2a26;
+}
+
+.details-place{
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #3b352f;
+}
+
+.details-time{
+  font-size: 14px;
+  color: #6e665f;
+  margin-bottom: 14px;
+}
+
+.details-map-link{
+  display:inline-block;
+  font-size: 14px;
+  color: #6b5cff;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+
+.details-map{
+  width:100%;
+  height:200px;
+  border-radius: 14px;
+  overflow:hidden;
+  border: 1px solid #eee;
+}
+
+.details-map iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration:none;
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+.btn:active{ transform: scale(0.98); }
+
+.btn-cal{
+  background:#f3f1ec;
+  color:#2e2a26;
+  border: 1px solid #e7e2d8;
+}
+

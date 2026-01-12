@@ -1,10 +1,20 @@
 (() => {
+  // ===============================
+  // Lock scroll immediately on load
+  // ===============================
+  document.documentElement.classList.add("scroll-locked");
+  document.body.classList.add("scroll-locked");
+
+  // Ensure page starts at top
+  window.scrollTo(0, 0);
+
   const wrap = document.getElementById("wrap");
   const btn  = document.getElementById("sealBtn");
   const vid  = document.getElementById("envVideo");
   const hint = document.getElementById("hint");
 
   const countdownSection = document.getElementById("countdownSection");
+  
 
   vid.muted = true;
   vid.playsInline = true;
@@ -16,6 +26,20 @@
   // Turn this on/off depending on what you want:
   const AUTO_SCROLL_TO_COUNTDOWN = false;
 
+  function unlockScroll(){
+    document.documentElement.classList.remove("scroll-locked");
+    document.body.classList.remove("scroll-locked");
+
+    document.documentElement.classList.add("scroll-unlocked");
+    document.body.classList.add("scroll-unlocked");
+  }
+
+  function showScrollIndicator(){
+    const indicator = document.querySelector(".scroll-indicator");
+    if (indicator) indicator.classList.add("is-visible");
+  }
+
+
   function showMarried(){
     if (stopTimer) clearTimeout(stopTimer);
     stopTimer = null;
@@ -23,6 +47,9 @@
     vid.pause();
     wrap.classList.remove("is-playing");
     wrap.classList.add("show-married");
+    // unlock scroll now
+    unlockScroll();
+    showScrollIndicator();
 
     btn.disabled = true;
     isPlaying = false;
