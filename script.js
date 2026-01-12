@@ -192,4 +192,32 @@
 
   updateCountdown();
   setInterval(updateCountdown, 1000);
+  const items = Array.from(document.querySelectorAll(".faq-item"));
+  if (!items.length) return;
+
+  function closeItem(btn){
+    btn.setAttribute("aria-expanded", "false");
+    const ans = btn.nextElementSibling;
+    if (ans) ans.hidden = true;
+  }
+
+  function openItem(btn){
+    btn.setAttribute("aria-expanded", "true");
+    const ans = btn.nextElementSibling;
+    if (ans) ans.hidden = false;
+  }
+
+  items.forEach(btn => {
+    closeItem(btn); // ensure consistent initial state
+
+    btn.addEventListener("click", () => {
+      const isOpen = btn.getAttribute("aria-expanded") === "true";
+
+      // close others (single-open accordion)
+      items.forEach(b => { if (b !== btn) closeItem(b); });
+
+      if (isOpen) closeItem(btn);
+      else openItem(btn);
+    });
+  });
 })();
