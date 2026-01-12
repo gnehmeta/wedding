@@ -376,6 +376,204 @@
     </div>
   </section>
 
+  <!-- ======================
+       SECTION — RSVP
+  ======================= -->
+  <section class="section section-rsvp" id="rsvp">
+    <div class="stage">
+
+      <h1 class="details-title">Confirm Your Attendance</h1>
+      <p class="section-subtitle">We look forward to celebrating with you</p>
+
+      <div class="rsvp-card">
+        <form class="rsvp-form" id="rsvpForm" autocomplete="on">
+
+          <label class="rsvp-label" for="rsvpName">Full Name <span class="req">*</span></label>
+          <input
+            class="rsvp-input"
+            id="rsvpName"
+            name="name"
+            type="text"
+            placeholder="Your name"
+            required
+          />
+
+          <!--label class="rsvp-label" for="rsvpEmail">Email <span class="opt">(optional)</span></label-->
+          <!--input
+            class="rsvp-input"
+            id="rsvpEmail"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+          /-->
+
+          <fieldset class="rsvp-fieldset">
+            <legend class="rsvp-legend">Will you attend? <span class="req">*</span></legend>
+
+            <label class="rsvp-radio">
+              <input type="radio" name="attend" value="yes" required />
+              <span>Yes, I will attend</span>
+            </label>
+
+            <label class="rsvp-radio">
+              <input type="radio" name="attend" value="no" required />
+              <span>Unfortunately, I can’t attend</span>
+            </label>
+          </fieldset>
+
+          <label class="rsvp-label" for="rsvpGuests">Number of guests (including yourself)</label>
+          <input
+            class="rsvp-input"
+            id="rsvpGuests"
+            name="guests"
+            type="number"
+            min="1"
+            value="1"
+          />
+
+          <div class="rsvp-guests-wrap" id="guestNamesWrap" hidden>
+            <div class="rsvp-guest-title">Guest Names</div>
+            <div class="rsvp-guest-sub">Please enter the names of the additional guests.</div>
+            <div class="rsvp-guest-list" id="guestNamesList"></div>
+          </div>
+
+
+          <button class="rsvp-submit" type="submit">
+            Send RSVP
+          </button>
+
+          <p class="rsvp-note" id="rsvpNote" aria-live="polite"></p>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section section-logistics" id="logistics">
+    <div class="stage">
+
+      <h1 class="details-title">Hotels & Taxis</h1>
+      <p class="section-subtitle">Let us help you with your comfort</p>
+
+      <div class="logistics-card">
+        <form class="logistics-form" id="logisticsForm">
+
+          <!-- HOTEL -->
+          <div class="logistics-block">
+            <div class="logistics-head">
+              <div class="logistics-ico" aria-hidden="true">
+                <!-- Hotel / Bed icon -->
+                <svg class="lux-ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 11h18"/>
+                  <path d="M5 11V8a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3"/>
+                  <path d="M14 11V9a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v2"/>
+                  <path d="M4 18v-3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3"/>
+                </svg>
+              </div>
+              <div>
+                <div class="logistics-title">Hotel</div>
+                <div class="logistics-sub">Do you need help arranging accommodation?</div>
+              </div>
+            </div>
+
+            <div class="logistics-choice">
+              <label class="lux-pill">
+                <input type="radio" name="hotel_need" value="yes">
+                <span>Yes</span>
+              </label>
+              <label class="lux-pill">
+                <input type="radio" name="hotel_need" value="no" checked>
+                <span>No</span>
+              </label>
+            </div>
+
+            <div class="logistics-more" id="hotelMore" hidden>
+              <label class="lux-label" for="hotelPeople">How many people?</label>
+              <input class="lux-input" id="hotelPeople" name="hotel_people" type="number" min="1" max="10" value="1">
+
+              <label class="lux-label" for="hotelNote">Notes (optional)</label>
+              <input class="lux-input" id="hotelNote" name="hotel_note" type="text" placeholder="">
+            </div>
+          </div>
+
+          <div class="logistics-divider" aria-hidden="true"></div>
+
+          <!-- TAXI -->
+          <div class="logistics-block">
+            <div class="logistics-head">
+              <div class="logistics-ico" aria-hidden="true">
+                <!-- Taxi / Car icon -->
+                <svg class="lux-ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 14l1.5-4.2A2.5 2.5 0 0 1 7.9 8h8.2a2.5 2.5 0 0 1 2.4 1.8L20 14"/>
+                  <path d="M6 14h12"/>
+                  <path d="M7 18a1.5 1.5 0 1 0 0 .01"/>
+                  <path d="M17 18a1.5 1.5 0 1 0 0 .01"/>
+                  <path d="M5 14v3"/>
+                  <path d="M19 14v3"/>
+                </svg>
+              </div>
+              <div>
+                <div class="logistics-title">Taxi</div>
+                <div class="logistics-sub">Would you like a pickup taxi arrangement?</div>
+              </div>
+            </div>
+
+            <div class="logistics-choice">
+              <label class="lux-pill">
+                <input type="radio" name="taxi_need" value="yes">
+                <span>Yes</span>
+              </label>
+              <label class="lux-pill">
+                <input type="radio" name="taxi_need" value="no" checked>
+                <span>No</span>
+              </label>
+            </div>
+
+            <div class="logistics-more" id="taxiMore" hidden>
+              <label class="lux-label" for="taxiPeople">How many people?</label>
+              <input class="lux-input" id="taxiPeople" name="taxi_people" type="number" min="1" max="10" value="1">
+
+              <label class="lux-label" for="pickupAddress">Pickup address <span class="lux-req">*</span></label>
+              <textarea class="lux-textarea" id="pickupAddress" name="pickup_address" rows="3"
+                placeholder="Street, building, floor, city"></textarea>
+
+              <div class="lux-help">We’ll only use this to coordinate your pickup.</div>
+            </div>
+          </div>
+
+          <div class="lux-loc-row">
+            <button class="lux-loc-btn" type="button" id="shareLocationBtn">
+              <svg class="lux-loc-ico" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 22s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/>
+                <path d="M12 10.5a2.2 2.2 0 1 0 0-.01"/>
+              </svg>
+              <span>Share location</span>
+            </button>
+
+            <a class="lux-loc-link" id="openMapsLink" href="#" target="_blank" rel="noopener" hidden>
+              Open in Google Maps
+            </a>
+          </div>
+
+          <input class="lux-input" id="pickupMapsUrl" name="pickup_maps_url" type="url"
+            placeholder="Google Maps link (optional)" hidden>
+
+
+          <!-- Optional button if you want to keep data locally for now -->
+          <button class="lux-submit" type="button" id="logisticsSaveBtn">
+            Save Preferences
+          </button>
+
+          <p class="lux-note" id="logisticsNote" aria-live="polite"></p>
+
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+
+
 
 
 </main>

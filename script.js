@@ -220,4 +220,264 @@
       else openItem(btn);
     });
   });
+
+    // ---------------------------
+  // RSVP dynamic guest names
+  // ---------------------------
+  const rsvpForm = document.getElementById("rsvpForm");
+  const rsvpNote = document.getElementById("rsvpNote");
+  const guestsInput = document.getElementById("rsvpGuests");
+  const guestNamesWrap = document.getElementById("guestNamesWrap");
+  const guestNamesList = document.getElementById("guestNamesList");
+
+  function getAttendValue() {
+    const yes = rsvpForm?.querySelector('input[name="attend"][value="yes"]');
+    const no  = rsvpForm?.querySelector('input[name="attend"][value="no"]');
+    if (yes?.checked) return "yes";
+    if (no?.checked) return "no";
+    return "";
+  }
+
+  function normalizeGuests(n) {
+    const v = parseInt(n, 10);
+    if (!Number.isFinite(v)) return 1;
+    return Math.max(1, Math.min(10, v));
+  }
+
+  function readExistingGuestNames() {
+    if (!guestNamesList) return [];
+    return Array.from(guestNamesList.querySelectorAll("input"))
+      .map(i => (i.value || "").trim());
+  }
+
+  function renderGuestNameFields() {
+    if (!rsvpForm || !guestsInput || !guestNamesWrap || !guestNamesList) return;
+
+    const attend = getAttendValue();
+    const guests = normalizeGuests(guestsInput.value);
+    const extraCount = Math.max(0, guests - 1);
+
+    // Only show guest-name inputs if attending "yes" and there are extra guests
+    if (attend !== "yes" || extraCount === 0) {
+      guestNamesList.innerHTML = "";
+      guestNamesWrap.hidden = true;
+      return;
+    }
+
+    const prev = readExistingGuestNames();
+    guestNamesWrap.hidden = false;
+    guestNamesList.innerHTML = "";
+
+    for (let i = 0; i < extraCount; i++) {
+      const label = document.createElement("label");
+      label.className = "rsvp-label";
+      label.style.marginTop = "0";
+      label.textContent = `Guest ${i + 2} Name`;
+
+      const input = document.createElement("input");
+      input.className = "rsvp-input";
+      input.type = "text";
+      input.name = `guest_name_${i + 2}`;
+      input.placeholder = `Guest ${i + 2} name`;
+      input.required = true;
+      input.value = prev[i] || "";
+
+      guestNamesList.appendChild(label);
+      guestNamesList.appendChild(input);
+    }
+  }
+
+  if (rsvpForm) {
+    // Re-render when attendance changes
+    rsvpForm.addEventListener("change", (e) => {
+      if (e.target && e.target.name === "attend") {
+        renderGuestNameFields();
+      }
+    });
+
+    // Re-render when number changes
+    if (guestsInput) {
+      guestsInput.addEventListener("input", renderGuestNameFields);
+      guestsInput.addEventListener("change", renderGuestNameFields);
+    }
+
+    // Initial render
+    renderGuestNameFields();
+
+    // Submit handler (for now, just validate & show message; next step will POST)
+    rsvpForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fd = new FormData(rsvpForm);
+      const name = (fd.get("name") || "").toString().trim();
+      const email = (fd.get("email") || "").toString().trim();
+      const attend = (fd.get("attend") || "").toString().trim();
+      const guests = normalizeGuests(fd.get("guests"));
+
+      if (!name || (attend !== "yes" && attend !== "no")) {
+        if (rsvpNote) rsvpNote.textContent = "Please complete the required fields.";
+        return;
+      }
+
+      let guestNames = [];
+      if (attend === "yes" && guests > 1) {
+        // Collect guest name inputs in order
+        guestNames = Array.from(guestNamesList.querySelectorAll("input"))
+          .map(i => (i.value || "").trim());
+
+        // Validate
+        if (guestNames.some(v => !v)) {
+          if (rsvpNote) rsvpNote.textContent = "Please enter all guest names.";
+          return;
+        }
+      }
+
+      // Confirmation for now (next step we will POST to /api/rsvp)
+      if (rsvpNote) {
+        rsvpNote.textContent =
+          attend === "yes"
+            ? `Thank you, ${name}. RSVP received for ${guests} guest(s).`
+            : `Thank you, ${name}. We appreciate your response.`;
+      }
+
+      // Optionally reset:
+      // rsvpForm.reset();
+      // if (guestsInput) guestsInput.value = "1";
+      // renderGuestNameFields();
+    });
+  }
+
+  // ---------------------------
+  // Logistics: Hotels & Taxis
+  // ---------------------------
+  const logisticsForm = document.getElementById("logisticsForm");
+  const hotelMore = document.getElementById("hotelMore");
+  const taxiMore = document.getElementById("taxiMore");
+  const pickupAddress = document.getElementById("pickupAddress");
+  const logisticsNote = document.getElementById("logisticsNote");
+  const logisticsSaveBtn = document.getElementById("logisticsSaveBtn");
+
+  function getCheckedValue(form, name){
+    const el = form?.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : "";
+  }
+
+  function toggleLogistics(){
+    if (!logisticsForm) return;
+
+    const hotelNeed = getCheckedValue(logisticsForm, "hotel_need");
+    const taxiNeed  = getCheckedValue(logisticsForm, "taxi_need");
+
+    if (hotelMore) hotelMore.hidden = (hotelNeed !== "yes");
+    if (taxiMore) taxiMore.hidden   = (taxiNeed !== "yes");
+
+    if (pickupAddress) {
+      pickupAddress.required = (taxiNeed === "yes");
+      if (taxiNeed !== "yes") pickupAddress.value = "";
+    }
+  }
+
+  if (logisticsForm) {
+    logisticsForm.addEventListener("change", toggleLogistics);
+    toggleLogistics();
+
+    if (logisticsSaveBtn) {
+      logisticsSaveBtn.addEventListener("click", () => {
+        const hotelNeed = getCheckedValue(logisticsForm, "hotel_need");
+        const taxiNeed  = getCheckedValue(logisticsForm, "taxi_need");
+
+        const hotelPeople = (document.getElementById("hotelPeople")?.value || "1").toString();
+        const hotelNote   = (document.getElementById("hotelNote")?.value || "").toString().trim();
+
+        const taxiPeople  = (document.getElementById("taxiPeople")?.value || "1").toString();
+        const address     = (pickupAddress?.value || "").toString().trim();
+
+        if (taxiNeed === "yes" && !address) {
+          if (logisticsNote) logisticsNote.textContent = "Please enter your pickup address.";
+          pickupAddress?.focus();
+          return;
+        }
+
+        const payload = {
+          hotelNeed,
+          hotelPeople: hotelNeed === "yes" ? hotelPeople : "",
+          hotelNote: hotelNeed === "yes" ? hotelNote : "",
+          taxiNeed,
+          taxiPeople: taxiNeed === "yes" ? taxiPeople : "",
+          pickupAddress: taxiNeed === "yes" ? address : ""
+        };
+
+        try {
+          localStorage.setItem("wedding_logistics", JSON.stringify(payload));
+          if (logisticsNote) logisticsNote.textContent = "Saved. Thank you.";
+        } catch (e) {
+          if (logisticsNote) logisticsNote.textContent = "Could not save on this device.";
+        }
+      });
+    }
+  }
+
+    // ---------------------------
+  // Taxi: Share location (Google Maps)
+  // ---------------------------
+  const shareLocationBtn = document.getElementById("shareLocationBtn");
+  const openMapsLink = document.getElementById("openMapsLink");
+  const pickupMapsUrl = document.getElementById("pickupMapsUrl");
+  const pickupAddressEl = document.getElementById("pickupAddress");
+
+  function setMapsLink(lat, lng){
+    const url = `https://www.google.com/maps?q=${lat},${lng}`;
+    if (openMapsLink) {
+      openMapsLink.href = url;
+      openMapsLink.hidden = false;
+    }
+    if (pickupMapsUrl) {
+      pickupMapsUrl.hidden = false;
+      pickupMapsUrl.value = url;
+    }
+  }
+
+  if (shareLocationBtn) {
+    shareLocationBtn.addEventListener("click", async () => {
+      // If geolocation not supported, show URL field so they can paste a link
+      if (!navigator.geolocation) {
+        if (pickupMapsUrl) pickupMapsUrl.hidden = false;
+        if (logisticsNote) logisticsNote.textContent = "Your browser can’t share GPS location. Please paste a Google Maps link.";
+        return;
+      }
+
+      if (logisticsNote) logisticsNote.textContent = "Requesting location…";
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lng = pos.coords.longitude.toFixed(6);
+
+          setMapsLink(lat, lng);
+
+          // Helpful text in the address field (user can add building/floor)
+          if (pickupAddressEl) {
+            const existing = (pickupAddressEl.value || "").trim();
+            const coordsLine = `GPS: ${lat}, ${lng}`;
+            pickupAddressEl.value = existing ? `${existing}\n${coordsLine}` : coordsLine;
+          }
+
+          if (logisticsNote) logisticsNote.textContent = "Location attached. You can add building/floor details above.";
+        },
+        (err) => {
+          if (pickupMapsUrl) pickupMapsUrl.hidden = false;
+
+          let msg = "Could not access location. Please paste a Google Maps link.";
+          if (err && err.code === 1) msg = "Location permission denied. Please paste a Google Maps link.";
+          if (err && err.code === 2) msg = "Location unavailable. Please paste a Google Maps link.";
+          if (err && err.code === 3) msg = "Location request timed out. Please paste a Google Maps link.";
+
+          if (logisticsNote) logisticsNote.textContent = msg;
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+      );
+    });
+  }
+
+  
 })();
