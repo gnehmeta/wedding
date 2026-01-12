@@ -437,11 +437,6 @@
             <div class="rsvp-guest-list" id="guestNamesList"></div>
           </div>
 
-
-          <button class="rsvp-submit" type="submit">
-            Send RSVP
-          </button>
-
           <p class="rsvp-note" id="rsvpNote" aria-live="polite"></p>
         </form>
       </div>
@@ -531,7 +526,7 @@
 
             <div class="logistics-more" id="taxiMore" hidden>
               <label class="lux-label" for="taxiPeople">How many people?</label>
-              <input class="lux-input" id="taxiPeople" name="taxi_people" type="number" min="1" max="10" value="1">
+              <input class="lux-input" id="taxiPeople" name="taxi_people" type="number" min="1" value="1">
 
               <label class="lux-label" for="pickupAddress">Pickup address <span class="lux-req">*</span></label>
               <textarea class="lux-textarea" id="pickupAddress" name="pickup_address" rows="3"
@@ -541,32 +536,60 @@
             </div>
           </div>
 
-          <div class="lux-loc-row">
-            <button class="lux-loc-btn" type="button" id="shareLocationBtn">
-              <svg class="lux-loc-ico" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 22s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/>
-                <path d="M12 10.5a2.2 2.2 0 1 0 0-.01"/>
-              </svg>
-              <span>Share location</span>
-            </button>
+          <label class="lux-label" for="pickupMapsUrl">Google Maps link</label>
+          <input
+            class="lux-input"
+            id="pickupMapsUrl"
+            name="pickup_maps_url"
+            type="url"
+            inputmode="url"
+            placeholder="Paste a Google Maps link (e.g., https://maps.app.goo.gl/...)"
+          />
 
-            <a class="lux-loc-link" id="openMapsLink" href="#" target="_blank" rel="noopener" hidden>
-              Open in Google Maps
-            </a>
+          <div class="lux-help">
+            Open Google Maps → search your address → Share → Copy link → paste it here.
           </div>
+
 
           <input class="lux-input" id="pickupMapsUrl" name="pickup_maps_url" type="url"
             placeholder="Google Maps link (optional)" hidden>
 
-
-          <!-- Optional button if you want to keep data locally for now -->
-          <button class="lux-submit" type="button" id="logisticsSaveBtn">
-            Save Preferences
-          </button>
-
           <p class="lux-note" id="logisticsNote" aria-live="polite"></p>
 
         </form>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section section-message" id="finalMessage">
+    <div class="stage">
+
+      <h1 class="details-title">One Last Thing</h1>
+      <p class="section-subtitle">A little note means a lot to us</p>
+
+      <div class="message-card">
+        <label class="lux-label" for="messageForUs">
+          Message for us <span class="lux-opt">(optional)</span>
+        </label>
+
+        <textarea
+          class="lux-textarea"
+          id="messageForUs"
+          name="message_for_us"
+          rows="4"
+          placeholder="Anything you’d like to tell us…"
+        ></textarea>
+
+        <button class="final-submit" type="button" id="finalSubmitBtn">
+          <svg class="final-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M22 2L11 13"/>
+            <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+          </svg>
+          <span>Send Confirmation</span>
+        </button>
+
+        <p class="final-note" id="finalNote" aria-live="polite"></p>
       </div>
 
     </div>

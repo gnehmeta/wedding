@@ -14,10 +14,11 @@
   const hint = document.getElementById("hint");
 
   const countdownSection = document.getElementById("countdownSection");
-  
 
-  vid.muted = true;
-  vid.playsInline = true;
+  if (vid) {
+    vid.muted = true;
+    vid.playsInline = true;
+  }
 
   const PLAY_MS = 2800;
   let isPlaying = false;
@@ -39,30 +40,32 @@
     if (indicator) indicator.classList.add("is-visible");
   }
 
-
   function showMarried(){
     if (stopTimer) clearTimeout(stopTimer);
     stopTimer = null;
 
-    vid.pause();
-    wrap.classList.remove("is-playing");
-    wrap.classList.add("show-married");
-    // unlock scroll now
+    if (vid) vid.pause();
+    if (wrap) {
+      wrap.classList.remove("is-playing");
+      wrap.classList.add("show-married");
+    }
+
     unlockScroll();
     showScrollIndicator();
 
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
     isPlaying = false;
 
     // Optional: smooth scroll down after the heart finishes
     if (AUTO_SCROLL_TO_COUNTDOWN && countdownSection) {
       setTimeout(() => {
         countdownSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 2600); // timed to your heart animations
+      }, 2600);
     }
   }
 
   async function playClick(){
+    if (!wrap || !vid) return;
     if (wrap.classList.contains("show-married")) return;
     if (isPlaying) return;
 
@@ -86,26 +89,35 @@
     stopTimer = setTimeout(showMarried, PLAY_MS);
   }
 
-  vid.addEventListener("ended", showMarried);
+  if (vid) vid.addEventListener("ended", showMarried);
 
-  btn.addEventListener("pointerup", (e) => {
-    e.preventDefault();
-    playClick();
-  }, { passive:false });
-
-  btn.addEventListener("click", playClick);
-
-  btn.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
+  if (btn) {
+    btn.addEventListener("pointerup", (e) => {
       e.preventDefault();
       playClick();
-    }
-  });
+    }, { passive:false });
+
+    btn.addEventListener("click", playClick);
+
+    btn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        playClick();
+      }
+    });
+  }
 
   // ---------------------------
   // Odometer helpers
   // ---------------------------
   function createOdometer(el, digits){
+    if (!el) {
+      return {
+        cols: [],
+        setValue(){ /* noop */ }
+      };
+    }
+
     el.innerHTML = "";
     const cols = [];
 
@@ -192,8 +204,11 @@
 
   updateCountdown();
   setInterval(updateCountdown, 1000);
+
+  // ---------------------------
+  // FAQ accordion (do NOT return if FAQ missing)
+  // ---------------------------
   const items = Array.from(document.querySelectorAll(".faq-item"));
-  if (!items.length) return;
 
   function closeItem(btn){
     btn.setAttribute("aria-expanded", "false");
@@ -207,21 +222,20 @@
     if (ans) ans.hidden = false;
   }
 
-  items.forEach(btn => {
-    closeItem(btn); // ensure consistent initial state
+  if (items.length) {
+    items.forEach(btn => {
+      closeItem(btn);
 
-    btn.addEventListener("click", () => {
-      const isOpen = btn.getAttribute("aria-expanded") === "true";
-
-      // close others (single-open accordion)
-      items.forEach(b => { if (b !== btn) closeItem(b); });
-
-      if (isOpen) closeItem(btn);
-      else openItem(btn);
+      btn.addEventListener("click", () => {
+        const isOpen = btn.getAttribute("aria-expanded") === "true";
+        items.forEach(b => { if (b !== btn) closeItem(b); });
+        if (isOpen) closeItem(btn);
+        else openItem(btn);
+      });
     });
-  });
+  }
 
-    // ---------------------------
+  // ---------------------------
   // RSVP dynamic guest names
   // ---------------------------
   const rsvpForm = document.getElementById("rsvpForm");
@@ -257,7 +271,6 @@
     const guests = normalizeGuests(guestsInput.value);
     const extraCount = Math.max(0, guests - 1);
 
-    // Only show guest-name inputs if attending "yes" and there are extra guests
     if (attend !== "yes" || extraCount === 0) {
       guestNamesList.innerHTML = "";
       guestNamesWrap.hidden = true;
@@ -288,23 +301,17 @@
   }
 
   if (rsvpForm) {
-    // Re-render when attendance changes
     rsvpForm.addEventListener("change", (e) => {
-      if (e.target && e.target.name === "attend") {
-        renderGuestNameFields();
-      }
+      if (e.target && e.target.name === "attend") renderGuestNameFields();
     });
 
-    // Re-render when number changes
     if (guestsInput) {
       guestsInput.addEventListener("input", renderGuestNameFields);
       guestsInput.addEventListener("change", renderGuestNameFields);
     }
 
-    // Initial render
     renderGuestNameFields();
 
-    // Submit handler (for now, just validate & show message; next step will POST)
     rsvpForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -321,18 +328,15 @@
 
       let guestNames = [];
       if (attend === "yes" && guests > 1) {
-        // Collect guest name inputs in order
-        guestNames = Array.from(guestNamesList.querySelectorAll("input"))
+        guestNames = Array.from(guestNamesList?.querySelectorAll("input") || [])
           .map(i => (i.value || "").trim());
 
-        // Validate
         if (guestNames.some(v => !v)) {
           if (rsvpNote) rsvpNote.textContent = "Please enter all guest names.";
           return;
         }
       }
 
-      // Confirmation for now (next step we will POST to /api/rsvp)
       if (rsvpNote) {
         rsvpNote.textContent =
           attend === "yes"
@@ -340,20 +344,18 @@
             : `Thank you, ${name}. We appreciate your response.`;
       }
 
-      // Optionally reset:
-      // rsvpForm.reset();
-      // if (guestsInput) guestsInput.value = "1";
-      // renderGuestNameFields();
+      // Later: submit to backend (when you decide)
     });
   }
 
   // ---------------------------
-  // Logistics: Hotels & Taxis
+  // Logistics: Hotels & Taxis (MAPS LINK ONLY)
   // ---------------------------
   const logisticsForm = document.getElementById("logisticsForm");
   const hotelMore = document.getElementById("hotelMore");
   const taxiMore = document.getElementById("taxiMore");
-  const pickupAddress = document.getElementById("pickupAddress");
+  const pickupAddress = document.getElementById("pickupAddress"); // optional details
+  const pickupMapsUrl = document.getElementById("pickupMapsUrl"); // required when taxi=yes
   const logisticsNote = document.getElementById("logisticsNote");
   const logisticsSaveBtn = document.getElementById("logisticsSaveBtn");
 
@@ -369,10 +371,18 @@
     const taxiNeed  = getCheckedValue(logisticsForm, "taxi_need");
 
     if (hotelMore) hotelMore.hidden = (hotelNeed !== "yes");
-    if (taxiMore) taxiMore.hidden   = (taxiNeed !== "yes");
+    if (taxiMore)  taxiMore.hidden  = (taxiNeed !== "yes");
 
+    // Maps link is required only when taxi=yes
+    if (pickupMapsUrl) {
+      pickupMapsUrl.required = false;           // NOT required anymore
+      if (taxiNeed !== "yes") pickupMapsUrl.value = "";
+    }
+
+
+    // Address textarea becomes optional details only
     if (pickupAddress) {
-      pickupAddress.required = (taxiNeed === "yes");
+      pickupAddress.required = false;
       if (taxiNeed !== "yes") pickupAddress.value = "";
     }
   }
@@ -390,13 +400,13 @@
         const hotelNote   = (document.getElementById("hotelNote")?.value || "").toString().trim();
 
         const taxiPeople  = (document.getElementById("taxiPeople")?.value || "1").toString();
-        const address     = (pickupAddress?.value || "").toString().trim();
+        const mapsLink    = (pickupMapsUrl?.value || "").toString().trim();
+        const details     = (pickupAddress?.value || "").toString().trim();
 
-        if (taxiNeed === "yes" && !address) {
-          if (logisticsNote) logisticsNote.textContent = "Please enter your pickup address.";
-          pickupAddress?.focus();
-          return;
+        if (taxiNeed === "yes" && !mapsLink && logisticsNote) {
+          logisticsNote.textContent = "Tip: you can paste a Google Maps link to make pickup easier.";
         }
+
 
         const payload = {
           hotelNeed,
@@ -404,7 +414,8 @@
           hotelNote: hotelNeed === "yes" ? hotelNote : "",
           taxiNeed,
           taxiPeople: taxiNeed === "yes" ? taxiPeople : "",
-          pickupAddress: taxiNeed === "yes" ? address : ""
+          pickupMapsUrl: taxiNeed === "yes" ? mapsLink : "",
+          pickupDetails: taxiNeed === "yes" ? details : ""
         };
 
         try {
@@ -417,67 +428,25 @@
     }
   }
 
-    // ---------------------------
-  // Taxi: Share location (Google Maps)
   // ---------------------------
-  const shareLocationBtn = document.getElementById("shareLocationBtn");
-  const openMapsLink = document.getElementById("openMapsLink");
-  const pickupMapsUrl = document.getElementById("pickupMapsUrl");
-  const pickupAddressEl = document.getElementById("pickupAddress");
+  // Final confirmation (single submit)
+  // ---------------------------
+  const finalSubmitBtn = document.getElementById("finalSubmitBtn");
+  const finalNote = document.getElementById("finalNote");
+  const messageForUs = document.getElementById("messageForUs");
 
-  function setMapsLink(lat, lng){
-    const url = `https://www.google.com/maps?q=${lat},${lng}`;
-    if (openMapsLink) {
-      openMapsLink.href = url;
-      openMapsLink.hidden = false;
-    }
-    if (pickupMapsUrl) {
-      pickupMapsUrl.hidden = false;
-      pickupMapsUrl.value = url;
-    }
-  }
+  if (finalSubmitBtn) {
+    finalSubmitBtn.addEventListener("click", () => {
+      const message = (messageForUs?.value || "").trim();
 
-  if (shareLocationBtn) {
-    shareLocationBtn.addEventListener("click", async () => {
-      // If geolocation not supported, show URL field so they can paste a link
-      if (!navigator.geolocation) {
-        if (pickupMapsUrl) pickupMapsUrl.hidden = false;
-        if (logisticsNote) logisticsNote.textContent = "Your browser can’t share GPS location. Please paste a Google Maps link.";
-        return;
-      }
+      // Later: gather RSVP + logistics + message and send to backend
+      // For now: just confirm UX
 
-      if (logisticsNote) logisticsNote.textContent = "Requesting location…";
+      finalNote.textContent = "Thank you! Your confirmation has been received 💛";
 
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude.toFixed(6);
-          const lng = pos.coords.longitude.toFixed(6);
-
-          setMapsLink(lat, lng);
-
-          // Helpful text in the address field (user can add building/floor)
-          if (pickupAddressEl) {
-            const existing = (pickupAddressEl.value || "").trim();
-            const coordsLine = `GPS: ${lat}, ${lng}`;
-            pickupAddressEl.value = existing ? `${existing}\n${coordsLine}` : coordsLine;
-          }
-
-          if (logisticsNote) logisticsNote.textContent = "Location attached. You can add building/floor details above.";
-        },
-        (err) => {
-          if (pickupMapsUrl) pickupMapsUrl.hidden = false;
-
-          let msg = "Could not access location. Please paste a Google Maps link.";
-          if (err && err.code === 1) msg = "Location permission denied. Please paste a Google Maps link.";
-          if (err && err.code === 2) msg = "Location unavailable. Please paste a Google Maps link.";
-          if (err && err.code === 3) msg = "Location request timed out. Please paste a Google Maps link.";
-
-          if (logisticsNote) logisticsNote.textContent = msg;
-        },
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
-      );
+      finalSubmitBtn.disabled = true;
+      finalSubmitBtn.style.opacity = "0.85";
     });
   }
 
-  
 })();
